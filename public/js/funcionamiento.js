@@ -135,4 +135,17 @@ $(document).ready(function(){
         location.href='/productores?buscar='+buscar+'&filas='+filas;
 
     });
+    $('#filasParcela').on('change',function(){
+        var filas=$(this).val();
+        var buscar=$('#buscarParc').val();
+        location.href='/parcelas?buscar='+buscar+'&filas='+filas;
+
+    });
+    $('#filasUsuarios').on('change',function(){
+        var filas=$(this).val();
+        var buscar=$('#buscarUsuario').val();
+        location.href='/usuarios?buscar='+buscar+'&filas='+filas;
+
+    });
+
 });

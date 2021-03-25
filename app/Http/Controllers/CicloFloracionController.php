@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\CicloFloracion;
 use App\Plantacion;
+use App\Parcela;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Crypt;
@@ -15,12 +16,12 @@ class CicloFloracionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    
+
      public function __construct(){
         $this->middleware('auth');
-        
+
         $this->middleware(function ($request, $next) {
-       
+
         $tipo= Auth()->user()->tipo;
          if(Auth::check() && Auth::user()->tipo=='Administrador'){
              return $next($request);
@@ -30,12 +31,12 @@ class CicloFloracionController extends Controller
         }else if(Auth::check() && Auth::user()->tipo=='campo'){
             return $next($request);
         }else{
-            
+
              return redirect('alertas');
         }
-        
+
         });
-        
+
     }
     public function index()
     {
@@ -62,8 +63,11 @@ class CicloFloracionController extends Controller
     public function mostrarCiclos($id){
 
         $ciclos = CicloFloracion::where('id_plantacion',$id)->get();
+        $plan=Plantacion::find($id);
+        $parcela=Parcela::where('id',$plan->id_parcela)->select('ha')->first();
 
-        return view('plantaciones.ciclos',['ciclos'=>$ciclos]);
+
+        return view('plantaciones.ciclos',['ciclos'=>$ciclos,'ha'=>$parcela->ha]);
     }
 
     /**
@@ -75,21 +79,21 @@ class CicloFloracionController extends Controller
     public function store(Request $request)
     {
         //
-        
+
         $ciclo = new CicloFloracion;
-      
-        
+
+
         $inicial = Carbon::parse($request->ini);
         $fin = Carbon::parse($request->fin);
 
-        
 
+ 
         $diasfloracion = $fin->diffInDays($inicial);//obtiene los dias de la floracion
 
         $diapromedio = $diasfloracion / 2;
 
         $fechamedia = $inicial->addDays($diapromedio);
-    
+
 
         $fechaestimada = $fechamedia->addMonths(9);//funciona correcto
 
@@ -102,7 +106,10 @@ class CicloFloracionController extends Controller
         $edadmeses =  $edaddias / 30.5;
 
 
+        $porcentaje =$request->prematura / 100;
+
         $id = $request->id;
+        $ciclo->año=$request->año;
         $ciclo->inicio_floracion =$request->ini;
         $ciclo->fin_floracion =$request->fin;
         $ciclo->dias_floracion = $diasfloracion;
@@ -112,17 +119,19 @@ class CicloFloracionController extends Controller
         $ciclo->fecha_cosecha = $request->cosecha;
         $ciclo->edad_fruto =$edadmeses;
         $ciclo->produccion =$request->produccion;
-        $ciclo->perdida_estimada =$request->perdida;
+        $ciclo->perdida_estimada =(($request->produccion*$porcentaje)/(1-$porcentaje));
 
-        $porcentaje =$request->prematura / 100;
-        $estimado = $request->produccion / $porcentaje;
+        $plantacion=Plantacion::where('id',$id)->select('id_parcela')->first();
+       //dd($plantacion);
+        $parcela=Parcela::where('id',$plantacion->id_parcela)->select('ha')->first();
+        $superficie=$parcela->ha;
+        $estimado = $request->produccion / $superficie;
         $ciclo->rendimiento_estimado = $estimado;
         $ciclo->id_plantacion = $id;
         $ciclo->save();
 
-        $ciclos = CicloFloracion::where('id_plantacion',$id)->get();
-
-        return view('plantaciones.ciclos',['ciclos'=>$ciclos]);
+       // $ciclos = CicloFloracion::where('id_plantacion',$id)->get();
+       return redirect('/mostrarciclo/'.$ciclo->id_plantacion);
 
     }
 
@@ -170,14 +179,14 @@ class CicloFloracionController extends Controller
         $inicial = Carbon::parse($request->ini);
         $fin = Carbon::parse($request->fin);
 
-        
+
 
         $diasfloracion = $fin->diffInDays($inicial);//obtiene los dias de la floracion
 
         $diapromedio = $diasfloracion / 2;
 
         $fechamedia = $inicial->addDays($diapromedio);
-    
+
 
         $fechaestimada = $fechamedia->addMonths(9);//funciona correcto
 
@@ -189,6 +198,9 @@ class CicloFloracionController extends Controller
         $edaddias = $realcosecha->diffInDays($valornuevo);
         $edadmeses =  $edaddias / 30.5;
 
+        $porcentaje =$request->prematura / 100;
+
+        $ciclo->año=$request->año;
         $ciclo->inicio_floracion =$request->ini;
         $ciclo->fin_floracion =$request->fin;
         $ciclo->dias_floracion = $diasfloracion;
@@ -198,17 +210,21 @@ class CicloFloracionController extends Controller
         $ciclo->fecha_cosecha = $request->cosecha;
         $ciclo->edad_fruto =$edadmeses;
         $ciclo->produccion =$request->produccion;
-        $ciclo->perdida_estimada =$request->perdida;
+        $ciclo->perdida_estimada =(($request->produccion*$porcentaje)/(1-$porcentaje));
 
-        $porcentaje =$request->prematura / 100;
-        $estimado = $request->produccion / $porcentaje;
+        $plantacion=Plantacion::where('id',$ciclo->id_plantacion)->select('id_parcela')->first();
+       //dd($plantacion->id_parcela);
+        $parcela=Parcela::where('id',$plantacion->id_parcela)->select('ha')->first();
+        //dd($parcela->ha);
+        $superficie=$parcela->ha;
+        $estimado = $request->produccion / $superficie;
         $ciclo->rendimiento_estimado = $estimado;
         $ciclo->id_plantacion = $ciclo->id_plantacion;
         $ciclo->save();
 
-        $ciclos = CicloFloracion::where('id_plantacion',$ciclo->id_plantacion)->get();
+       // $ciclos = CicloFloracion::where('id_plantacion',$ciclo->id_plantacion)->get();
 
-        return view('plantaciones.ciclos',['ciclos'=>$ciclos]);
+        return redirect('/mostrarciclo/'.$ciclo->id_plantacion);
     }
 
     /**
@@ -221,13 +237,15 @@ class CicloFloracionController extends Controller
     {
         //
         $data =Crypt::decrypt($id);
+        //dd($data);
         $ciclo = CicloFloracion::find($data['id']);
-        $id_plantacion = $ciclo->id_plantacion;
+       // dd($ciclo->id_plantacion);
+       // $id_plantacion = $ciclo->id_plantacion;
         CicloFloracion::destroy($data['id']);
 
 
-        $ciclos = CicloFloracion::where('id_plantacion',$id_plantacion)->get();
+       // $ciclos = CicloFloracion::where('id_plantacion',$id_plantacion)->get();
 
-        return view('plantaciones.ciclos',['ciclos'=>$ciclos]);
+        return redirect('/mostrarciclo/'.$ciclo->id_plantacion);
     }
 }

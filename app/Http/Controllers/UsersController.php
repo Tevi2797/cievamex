@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Cargos;
 use App\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -13,7 +14,7 @@ class UsersController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
-     */
+     */ 
 
     public function __construct(){
           $this->middleware('auth');
@@ -35,15 +36,20 @@ class UsersController extends Controller
     public function index(Request $request)
     {
         //
-
-       // $users = User::all();
-        //return view('users.usuarios',['users'=>$users]);
         $variable = $request->buscar;
+        $filas = $request->filas;
+        if(!$filas){
+            $filas=10;
+        }
+        $cantidad = User::where('nombre','LIKE',"%".$variable."%")
+        ->orWhere('apellidos','LIKE',"%".$variable."%")
+        ->orWhere('tipo','LIKE',"%".$variable."%")->count();
+
         $users = User::where('nombre','LIKE',"%".$variable."%")
                         ->orWhere('apellidos','LIKE',"%".$variable."%")
-                        ->orWhere('tipo','LIKE',"%".$variable."%")->take(10)->get();
+                        ->orWhere('tipo','LIKE',"%".$variable."%")->paginate($filas);
 
-        return view('users.usuarios',['users'=>$users]);
+        return view('users.usuarios',['users'=>$users,'cantidad'=>$cantidad,'filas'=>$filas,'buscar'=>$variable]);
 
     }
 
@@ -73,7 +79,7 @@ class UsersController extends Controller
         $request->validate([
             'nombre'=>'required',
             'apellidos'=>'required',
-            'edad'=>'required',
+            'f_nac'=>'required',
             'correo'=>'required|email|unique:users,email',
             'password'=>'required|min:8|regex:/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/',
             'tipo'=>'required',
@@ -82,7 +88,7 @@ class UsersController extends Controller
         ],[
             'nombre.required'=>'El campo nombre es necesario.',
             'apellidos.required'=>'El campo apellidos es necesario.',
-            'edad.required'=>'El campo edad es necesario.',
+            'f_nac.required'=>'El campo edad es necesario.',
             'correo.required'=>'El campo correo es necesario.',
             'correo.email'=>'El correo debe ser una dirección de correo valida.',
             'correo.unique'=>'El correo ya ha sido registrado.',
@@ -93,10 +99,10 @@ class UsersController extends Controller
             'telefono.required'=>'El campo telefono es necesario.'
             ]);
         //
-        $user = new User();
+        $user = new User(); 
         $user->nombre=$request->nombre;
         $user->apellidos=$request->apellidos;
-        $user->edad=$request->edad;
+        $user->fecha_nacimiento=$request->f_nac; 
         $user->email=$request->correo;
         $user->password=bcrypt($request->password);
         $user->tipo=$request->tipo;
@@ -151,12 +157,31 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'nombre'=>'required',
+            'apellidos'=>'required',
+            'f_nac'=>'required',
+            'correo'=>'required|email|',
+            'password'=>'required|min:8|regex:/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])/',
+            'tipo'=>'required',
+            'telefono'=>'required',
+        ],[
+            'nombre.required'=>'El campo nombre es necesario.',
+            'apellidos.required'=>'El campo apellidos es necesario.',
+            'f_nac.required'=>'El campo edad es necesario.',
+            'correo.required'=>'El campo correo es necesario.',
+            'correo.email'=>'El correo debe ser una dirección de correo valida.',
+            //'correo.unique'=>'El correo ya ha sido registrado.',
+            'password.required'=>'El campo contraseña es necesario.',
+            'password.min'=>'La contraseña debe ser al menos de 8 caracteres.',
+            'password.regex'=>'La contraseña de contener al menos una mayúscula, una minúscula y un número',
+            'telefono.required'=>'El campo telefono es necesario.'
+            ]);
 
         $user =User::find($id);
         $user->nombre=$request->nombre;
         $user->apellidos=$request->apellidos;
-        $user->edad=$request->edad;
+        $user->f_nac=$request->f_nac;
         $user->email=$request->correo;
         $user->password=bcrypt($request->password);
         $user->tipo=$request->tipo;
@@ -165,7 +190,7 @@ class UsersController extends Controller
 
 
         $user->save();
-        $users = User::all();
+       // $users = User::all();
         return redirect('usuarios');
 
     }
@@ -180,8 +205,8 @@ class UsersController extends Controller
     {
         //
         User::destroy($id);
-         $users = User::all();
-        return view('users.usuarios',['users'=>$users]);
+       //  $users = User::all();
+        return redirect('usuarios');
 
     }
 }

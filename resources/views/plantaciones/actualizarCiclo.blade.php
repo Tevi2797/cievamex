@@ -20,147 +20,130 @@
 
 <br><br>
 
-  <div class="row justify-content-md-center">
+    <div class="row justify-content-md-center">
 
-  <div class="col-lg-6 py-3 px-lg-5 border bg-light" style="background-color: white;">
+        <div class="col-lg-6 py-3 px-lg-5 border bg-light" style="background-color: white;">
 
-<br>
+            <br>
 
-<h1 class="titulo1" align="center">Actualizar Ciclo de Floración</h1>
+            <h1 class="titulo1" align="center">Actualizar Ciclo de Floración</h1>
 
-			@php
+            @php
 
-				$parameter =[
+                $parameter =[
 
-					'id'=>$ciclo->id,
+                    'id'=>$ciclo->id,
 
-				];
+                ];
 
-				$parameter = Crypt::encrypt($parameter);
+                $parameter = Crypt::encrypt($parameter);
 
-			@endphp
+            @endphp
 
-			<form method="post" action="{{route('ciclos.update',$parameter)}}">
+            <form method="post" action="{{route('ciclos.update',$parameter)}}">
 
-			@method('PUT')
+                @method('PUT')
 
-			@csrf
+                @csrf
+                <div class="form-group row">
 
-			<div class="form-group row">
+                    <label for="example-date-input" class="col-5 col-form-label">Año</label>
 
-			<label for="example-date-input" class="col-5 col-form-label">Inicio de floración</label>
+                    <div class="col-7">
 
-		  	<div class="col-7">
+                    <input class="form-control" type="number" name="año"  value="{{$ciclo->año}}" id="año" min="1900" max="9999">
+                    </div>
+                </div>
 
-		    <input class="form-control" type="date" name="ini"  value="{{$ciclo->inicio_floracion}}" id="example-date-input">
+                <div class="form-group row">
 
+                    <label for="example-date-input" class="col-5 col-form-label">Inicio de floración</label>
 
+                    <div class="col-7">
 
-		  	</div>
+                        <input class="form-control" type="date" name="ini"  value="{{$ciclo->inicio_floracion}}" id="example-date-input">
 
-			</div>
+                    </div>
 
+                </div>
 
 
-			<div class="form-group row">
 
-			<label for="example-date-input" class="col-5 col-form-label">Fin de floración</label>
+                <div class="form-group row">
 
-		  	<div class="col-7">
+                    <label for="example-date-input" class="col-5 col-form-label">Fin de floración</label>
 
-		    <input class="form-control" type="date" name="fin"  value="{{$ciclo->fin_floracion}}" id="example-date-input">
+                    <div class="col-7">
 
+                        <input class="form-control" type="date" name="fin"  value="{{$ciclo->fin_floracion}}" id="example-date-input">
 
+                    </div>
 
-		  	</div>
+                </div>
 
-			</div>
 
 
+                <div class="form-group row">
 
-			<div class="form-group row">
+                    <label for="tipo" class="col-5 col-form-label">Daño por sequía</label>
 
-		    <label for="tipo" class="col-5 col-form-label">Daño por sequía</label>
+                    <div class="col-7">
 
-		    <div class="col-7">
+                    <select class="form-control" id="daño" name="daño" >
 
-		    <select class="form-control" id="daño" name="daño" >
+                        <option {{$ciclo->daño == 'Bajo' ? 'selected' : ''}}>Bajo</option>
 
-		      <option {{$ciclo->daño == 'Bajo' ? 'selected' : ''}}>Bajo</option>
+                        <option {{$ciclo->daño == 'Medio' ? 'selected' : ''}}>Medio</option>
 
-		      <option {{$ciclo->daño == 'Medio' ? 'selected' : ''}}>Medio</option>
+                        <option {{$ciclo->daño == 'Alto' ? 'selected' : ''}}>Alto</option>
 
-		      <option {{$ciclo->daño == 'Alto' ? 'selected' : ''}}>Alto</option>
+                    </select>
 
-		    </select>
+                </div>
 
-		    </div>
+                </div>
 
-		  </div>
 
 
+                <div class="form-group">
 
-		   <div class="form-group">
+                    <label for="formGroupExampleInput">Caída prematura (%)</label>
 
-		    <label for="formGroupExampleInput">Caída prematura (%)</label>
+                    <input type="number" step="any" value="{{$ciclo->caida_prematura}}" class="form-control" id="prematura" name="prematura">
 
-		    <input type="number" step="any" value="{{$ciclo->caida_prematura}}" class="form-control" id="prematura" name="prematura">
+                </div>
 
-		  </div>
 
 
+                <div class="form-group row">
+                    <label for="example-date-input" class="col-5 col-form-label">Fecha de cosecha</label>
+                    <div class="col-7">
+                        <input class="form-control" type="date" name="cosecha"  value="{{$ciclo->fecha_cosecha}}" id="example-date-input">
+                    </div>
+                </div>
 
-		<div class="form-group row">
 
-			<label for="example-date-input" class="col-5 col-form-label">Fecha de cosecha</label>
 
-		  	<div class="col-7">
+                <div class="form-group">
 
-		    <input class="form-control" type="date" name="cosecha"  value="{{$ciclo->fecha_cosecha}}" id="example-date-input">
+                    <label for="formGroupExampleInput">Cosecha (kg)</label>
 
+                    <input type="number" step="any" value="{{$ciclo->produccion}}" class="form-control" id="produccion" name="produccion">
 
+                </div>
+                <div class="form-group">
 
-		  	</div>
+                    <input type="submit" name="boton" value="Guardar" class="btn btn-primary btn-lg btn-block fondoVerde">
 
-		</div>
-
-
-
-		<div class="form-group">
-
-		    <label for="formGroupExampleInput">Cosecha (kg)</label>
-
-		    <input type="number" step="any" value="{{$ciclo->produccion}}" class="form-control" id="produccion" name="produccion">
-
-		 </div>
-
-
-
-		 <div class="form-group">
-
-		    <label for="formGroupExampleInput">Pérdida estimada (kg)</label>
-
-		    <input type="number" step="any" value="{{$ciclo->perdida_estimada}}" class="form-control" id="perdida" name="perdida">
-
-		 </div>
-
-
-
-<div class="form-group">
-
-    <input type="submit" name="boton" value="Guardar" class="btn btn-primary btn-lg btn-block fondoVerde">
-
-  </div>
+                </div>
 
 			</form>
-
-
-
-			</div>
 
 		</div>
 
 	</div>
+
+</div>
 
 <br><br>
 

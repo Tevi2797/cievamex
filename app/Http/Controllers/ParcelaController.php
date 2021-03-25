@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Parcela;
+use App\Estados;
 use App\Municipio;
 use App\Productor;
 use App\Riego;
@@ -19,7 +20,7 @@ class ParcelaController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
-     */
+     */ 
     public function __construct(){
           $this->middleware('auth');
 
@@ -47,6 +48,19 @@ class ParcelaController extends Controller
     {
         //
         $variable = $request->buscar;
+        $filas = $request->filas;
+        if(!$filas){
+            $filas=10;
+        }
+        $cantidad = Parcela::join("municipios","municipios.id","=","parcelas.id_municipio")
+            ->join("estados","estados.id","=","municipios.id_estado")
+            ->join("productors","productors.id","=","parcelas.id_productor")
+            ->select("parcelas.*")
+            ->Where('productors.nombre','LIKE',"%".$variable."%")
+            ->orWhere('productors.apellido_pat','LIKE',"%".$variable."%")
+            ->orWhere('productors.apellido_mat','LIKE',"%".$variable."%")
+            ->orWhere('estados.nombre','LIKE',"%".$variable."%")
+            ->orWhere('municipios.nombre','LIKE',"%".$variable."%")->count();
         $parcelas = Parcela::join("municipios","municipios.id","=","parcelas.id_municipio")
             ->join("estados","estados.id","=","municipios.id_estado")
             ->join("productors","productors.id","=","parcelas.id_productor")
@@ -55,11 +69,11 @@ class ParcelaController extends Controller
             ->orWhere('productors.apellido_pat','LIKE',"%".$variable."%")
             ->orWhere('productors.apellido_mat','LIKE',"%".$variable."%")
             ->orWhere('estados.nombre','LIKE',"%".$variable."%")
-            ->orWhere('municipios.nombre','LIKE',"%".$variable."%")->get();
+            ->orWhere('municipios.nombre','LIKE',"%".$variable."%")->paginate($filas);
 
 
 
-        return view('parcelas.parcelas',['parcelas'=>$parcelas]);
+        return view('parcelas.parcelas',['parcelas'=>$parcelas,'cantidad'=>$cantidad,'filas'=>$filas,'buscar'=>$variable]);
     }
 
     /**
@@ -74,11 +88,12 @@ class ParcelaController extends Controller
         $productores = Productor::all();
         $riegos = Riego::all();
         $suelos = TipoSuelo::all();
+        $estados= Estados::all();
 
         $tipos = TipoPlantacion::all();
         $especies = Especie::all();
 
-        return view('parcelas.nuevaParcela',['municipios'=>$municipios,
+        return view('parcelas.nuevaParcela',['estados'=>$estados,'municipios'=>$municipios,
             'productores'=>$productores,'riegos'=>$riegos,'suelos'=>$suelos,'tipos'=>$tipos,'especies'=>$especies]);
     }
 
@@ -94,16 +109,16 @@ class ParcelaController extends Controller
     {
         //
         $parcela = new Parcela();
-
+        $parcela->id_estado= $request->estado;
+        $parcela->id_municipio= $request->municipio;
+        $parcela->localidad= $request->localidad;
         $parcela->latitud= $request->latitud;
         $parcela->longitud= $request->longitud;
         $parcela->altitud= $request->altitud;
         $parcela->ha= $request->ha;
-        $parcela->pendiente= $request->pendiente;
-        $parcela->localidad= $request->localidad;
+        $parcela->pendiente= $request->pendiente;        
         $parcela->id_tiposuelo= $request->suelo;
-        $parcela->id_riego= $request->riego;
-        $parcela->id_municipio= $request->municipio;
+        $parcela->id_riego= $request->riego;        
         $parcela->id_productor= $request->productor;
 
         $parcela->save();
@@ -119,9 +134,9 @@ class ParcelaController extends Controller
 
         $plantacion->save();
 
-        $parcelas = Parcela::all();
+       // $parcelas = Parcela::all();
 
-        return view('parcelas.parcelas',['parcelas'=>$parcelas]);
+        return redirect('/parcelas');
     }
 
     /**
@@ -150,10 +165,13 @@ class ParcelaController extends Controller
         $productores = Productor::all();
         $riegos = Riego::all();
         $suelos = TipoSuelo::all();
-
+        $especies = Especie::all();
+        $tipos = TipoPlantacion::all();
+        $plantacion = Plantacion::where('id_parcela',$data['id'])->get()->first();
         return view('parcelas.actualizarParcela',['municipios'=>$municipios,
             'productores'=>$productores,'riegos'=>$riegos,'suelos'=>$suelos,
-            'parcela'=>$parcela]);
+            'parcela'=>$parcela,'plantacion'=>$plantacion,
+            'especies'=>$especies,'tipos'=>$tipos]);
 
 
     }
@@ -184,9 +202,17 @@ class ParcelaController extends Controller
 
         $parcela->save();
 
-        $parcelas = Parcela::all();
+        $plantacion = Plantacion::find($request->id_plantacion);
+        $plantacion->cantidad =$request->cantidad;
+        $plantacion->año =$request->año;
+        $plantacion->id_especie =$request->especie;
+        $plantacion->id_tipoplantacion =$request->tipo;
 
-        return view('parcelas.parcelas',['parcelas'=>$parcelas]);
+        $plantacion->save();
+
+       // $parcelas = Parcela::all();
+
+        return redirect('/parcelas');
 
     }
 
@@ -202,8 +228,8 @@ class ParcelaController extends Controller
         $data=Crypt::decrypt($id);
         Parcela::destroy($data['id']);
 
-        $parcelas = Parcela::all();
+       // $parcelas = Parcela::all();
 
-        return view('parcelas.parcelas',['parcelas'=>$parcelas]);
+        return redirect('/parcelas');
     }
 }

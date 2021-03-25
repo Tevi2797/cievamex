@@ -1,7 +1,7 @@
 <?php
 
 namespace App;
-
+use Carbon\Carbon;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'nombre','apellidos','edad', 'email', 'password','tipo','telefono','id_cargo',
+        'nombre','apellidos','f_nac', 'email', 'password','tipo','telefono','id_cargo', 
     ];
 
     /**

@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 /*
 |--------------------------------------------------------------------------
@@ -12,7 +12,8 @@
 */
 
 use App\Municipio;
-
+use Illuminate\Support\Facades\Route;
+use Barryvdh\DomPDF\Facade as PDF;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -31,8 +32,8 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::resource('cargos','CargosController');
 Route::resource('admin','GayaController');
-Route::get('/dashboard', 'GayaController@dashboard')->name('dashboard');
-Route::get('/addFamilia', 'ProductorController@addFamilia')->name('addFamilia');
+Route::get('/dashboard', 'GayaController@dashboard')->name('dashboard')->middleware('auth','admin');
+Route::get('/addFamilia', 'ProductorController@addFamilia')->name('addFamilia'); 
 Route::get('/mostrar/{productor_id}', 'FamiliaController@mostrar')->name('mostrarview');
 Route::get('/familia/{productor_id}', 'FamiliaController@listaFamilia')->name('lista.familia');
 

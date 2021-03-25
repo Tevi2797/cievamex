@@ -28,11 +28,24 @@
 
         <br>
         <h1 class="titulo1" align="center">Registrar Nuevo Productor</h1>
-        <form method="post" action="{{route('productores.store')}}" novalidate >
+        <form method="post" action="{{route('productores.store')}}" novalidate >  
             @csrf
             <br>
         <div class="row">
+        
             <div class="col-lg-6 py-3 px-lg-4 bg-light" style="background-color: white">
+            <div class="form-group">
+ 
+            <label for="tipo">Nacionalidad</label>
+
+                    <select class="form-control"  id="nacionalidad" name="nacionalidad" >
+
+                    <option >Mexicana</option>
+                    <option>Extranjera</option>
+                    
+                    </select>
+
+                </div>
 
                 <div class="form-group">
 
@@ -72,20 +85,20 @@
                             </div>
                         @enderror
                     </div>
-
+ 
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-7">
 
-                        <label for="edad">Edad<span class="text-danger"> *</span> </label>
+                    <label for="nacimiento">Fecha de Nacimiento <span class="text-danger"> *</span></label>
 
-                        <input type="text" class="form-control @error('edad') is-invalid @enderror" value="{{ old('edad')}}" id="edad" name="edad" placeholder="">
-                        @error('edad')
-                        <div class="invalid-feedback">
-                            {{$message}}
-                        </div>
-                    @enderror
+                            <input class="form-control @error('nacimiento') is-invalid @enderror" type="date" value="2011-08-19" id="nacimiento" name="nacimiento" required>
+                            @error('f_nac')
+                                <div class="invalid-feedback">
+                                    {{$message}}
+                                </div>
+                            @enderror 
                     </div>
 
                     <div class="form-group col-md-6">
@@ -114,21 +127,9 @@
                     <input type="text" class="form-control" id="telefono" value="{{ old('telefono')}}" name="telefono" placeholder="5510998745" required="required">
 
                 </div>
+                
 
-                <div class="form-group">
-
-                    <label for="tipo">Escolaridad</label>
-
-                    <select class="form-control"  id="escolaridad" name="escolaridad" >
-
-                    <option >Nula</option>
-                    <option>Primaria</option>
-                    <option>Secundaria</option>
-                    <option>Media Superior</option>
-                    <option>Superior</option>
-                    </select>
-
-                </div>
+                
 
                 <div class="form-group">
 
@@ -148,6 +149,20 @@
 
                     <option>PEMEX</option>
 
+                    </select>
+
+                </div>
+                <div class="form-group">
+
+                    <label for="tipo">Escolaridad</label>
+
+                    <select class="form-control"  id="escolaridad" name="escolaridad" >
+
+                    <option >Nula</option>
+                    <option>Primaria</option>
+                    <option>Secundaria</option>
+                    <option>Media Superior</option>
+                    <option>Superior</option>
                     </select>
 
                 </div>
@@ -254,6 +269,13 @@
                         <input type="text" class="form-control" id="numero" name="numero" placeholder="">
 
                     </div>
+                </div>
+                <div class="form-group">
+
+                    <label for="referencia">enfermedad</label>
+
+                    <input type="text" class="form-control" id="enfermedad" name="enfermedad" placeholder="">
+
                 </div>
                 <div class="form-group">
 

@@ -30,7 +30,17 @@
 
 			@csrf
 
+            <div class="form-group row">
 
+                <label for="example-date-input" class="col-5 col-form-label">Año</label>
+
+                      <div class="col-7">
+
+                        <input class="form-control" type="number" name="año"  value="2020" id="año" min="1900" max="9999">
+
+                      </div>
+
+            </div>
 
     			<div class="form-group row">
 
@@ -42,7 +52,7 @@
 
 		  	            </div>
 
-			    </div>
+			    </div> 
 
 
 
@@ -119,16 +129,6 @@
 		    <label for="formGroupExampleInput">Cosecha (kg)</label>
 
 		    <input type="number" step="any" class="form-control" id="produccion" name="produccion">
-
-		 </div>
-
-
-
-		 <div class="form-group">
-
-		    <label for="formGroupExampleInput">Pérdida estimada (kg)</label>
-
-		    <input type="number" step="any" class="form-control" id="perdida" name="perdida">
 
 		 </div>
 

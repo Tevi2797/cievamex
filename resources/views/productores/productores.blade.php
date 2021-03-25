@@ -1,5 +1,5 @@
 @extends('plantillas.adminMain')
-
+ 
 
 @section('titulo','Productores')
 
@@ -7,12 +7,12 @@
 @section('formbus')
 
 <div class="container">
+    <form>
     <div class="row">
 		<div class="col">
 			<br>
 			<h2 class="titulo1 centrarCosa">Productores</h2>
             <br>
-            <form>
                 <div class="input-group mb-3">
                     <input type="text" class="form-control" id="buscar" value="" name="buscar" placeholder="Ingrese el nombre, municipio o estado" >
                     <input type="hidden" value="{{$buscar}}" id="buscarProd">
@@ -20,24 +20,28 @@
                         <input type="submit" name="boton" value="Buscar" class="btn fondoVerde">
                     </div>
                 </div>
-                @if ($cantidad>0)
-                    <div class="input-group">
-                       <h6>Total {{$cantidad}} productores </h6>
-                        <select name="filas" id="filasProd">
-                            <option value="10" @if($filas==='10') selected  @endif>1</option>
-                            <option value="25"  @if($filas==='25') selected  @endif>2</option>
-                            <option value="50"  @if($filas==='50') selected  @endif>50</option>
-                            <option value="100" @if($filas==='100') selected  @endif>100</option>
-                        </select>
-                         por página
-                    </div>
-                @else
-
-                @endif
-
-            </form>
         </div>
     </div>
+    <div class="row">
+        <div class="col-5">
+            @if ($cantidad>0)
+            <div class="input-group">
+               <h6>Total {{$cantidad}} productores </h6>
+                <select class="custom-select ml-2 mr-sm-2" name="filas" id="filasProd">
+                    <option value="10" @if($filas==='10') selected  @endif>10</option>
+                    <option value="25"  @if($filas==='25') selected  @endif>25</option>
+                    <option value="50"  @if($filas==='50') selected  @endif>50</option>
+                    <option value="100" @if($filas==='100') selected  @endif>100</option>
+                </select>
+                 por página
+            </div>
+            @else
+            No se encontraron productores con esas características.
+            @endif
+        </div>
+    </div>
+    </form>
+    <br>
 
     <div class="row">
         <div class="col">
@@ -77,6 +81,7 @@
 			        <td class="centrarColumna"><div class="dropdown">
 			            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="{{asset('img/mas.png')}}" class="imgTabla"></button>
 				            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="{{route('parcelas.create')}}">Agregar Parcela</a>
                             <a class="dropdown-item" href="/mostrar/{{$productor->id}}">Agregar Familiar</a>
                             <a class="dropdown-item" href="/familia/{{$productor->id}}">Ver Familiares</a>
                             <a class="dropdown-item" href="/socioe/{{$productor->id}}/edit">Estudio Socieconómico</a>

@@ -7,7 +7,7 @@ use App\Parcela;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth; 
 class VisitaController extends Controller
 {
     /**
@@ -72,7 +72,7 @@ class VisitaController extends Controller
         $valor = $request->año;
         $id_parcela =$request->id;
 
-        $visitas = Visita::whereYear('created_at', $valor)
+        $visitas = Visita::whereYear('fecha', $valor)  
                          ->get();
 
         $parcelas = Parcela::all();

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class CicloFloracion extends Model
 {
     //
-     protected $fillable = [
+     protected $fillable = ['año',
         'inicio_floracion','fin_floracion','dias_floracion','recomendada',
         'daño','caida_prematura','fecha_cosecha',
         'edad_fruto','produccion','perdida_estimada',
@@ -18,3 +18,4 @@ class CicloFloracion extends Model
     	return $this->belongsTo('App\Plantacion','id_plantacion','id');
     }
 }
+ 

@@ -13,6 +13,7 @@ use App\Direccion;
 use App\ServiciosEquipamiento;
 use App\CaractesticasCasa;
 use App\Casa;
+use App\Parcela;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -21,7 +22,7 @@ use Illuminate\Support\Facades\App;
 
 class ProductorController extends Controller
 {
-    /**
+    /** 
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -114,6 +115,7 @@ class ProductorController extends Controller
 
         return view('productores.productorFamilia',['productores'=>$productores]);
     }
+    
 
     /**
      * Show the form for creating a new resource.
@@ -140,10 +142,11 @@ class ProductorController extends Controller
     {
         //validaciones de la view nuevo productor
         $request->validate([
+            'nacionalidad'=>'required',
             'nombre'=>'required',
             'apellido_pat'=>'required',
             'apellido_mat'=>'required',
-            'edad'=>'required|numeric',
+            'nacimiento'=>'required',
             'sexo'=>'required',
             'select_act'=>'required',
             'select_edo'=>'required',
@@ -189,16 +192,18 @@ class ProductorController extends Controller
         $id_casa=Casa::max('id');
 
         $productor = new Productor();
+        $productor->nacionalidad=$request->nacionalidad;
         $productor->nombre=$request->nombre;
         $productor->apellido_pat=$request->apellido_pat;
         $productor->apellido_mat=$request->apellido_mat;
-        $productor->edad=$request->edad;
+        $productor->nacimiento=$request->nacimiento;
+        $productor->escolaridad=$request->escolaridad;
         $productor->sexo=$request->sexo;
         $productor->telefono=$request->telefono;
-        $productor->escolaridad=$request->escolaridad;
-        $productor->id_direccion= $id_direccion;
-        $productor->id_acteconomica= $request->select_act;
         $productor->seguro=$request->seguro;
+        $productor->enfermedad=$request->enfermedad;        
+        $productor->id_direccion= $id_direccion;
+        $productor->id_acteconomica= $request->select_act;        
         $productor->id_estatuscasa=$id_casa;
 
         $productor->save();
@@ -221,8 +226,10 @@ class ProductorController extends Controller
          $familias = Familia::where('id_productor', $id)->get();
          $id_produ= $productor->id_direccion;
          $direccion = Direccion::where('id',$id_produ)->first();
-         $view = view('productores.estudioPdf',compact('productor','familias','direccion'));
-         return $view;
+
+       // return redirect('imprimir/productor');
+       $pdf=PDF::loadView('productores.estudioPdf',compact('productor','familias','direccion'));
+       return $pdf->stream();
 
     }
 
@@ -231,13 +238,8 @@ class ProductorController extends Controller
         $familias = Familia::where('id_productor', $id)->get();
         $id_produ= $productor->id_direccion;
         $direccion = Direccion::where('id',$id_produ)->first();
-        $view = view()->share('productores.estudioPdf',compact('productor','familias','direccion'));
-
-         $pdf=PDF::loadView('productores.estudioPdf',compact('productor','familias','direccion'));
-         $pdf->download('productor.pdf');
-       /* $pdf = App::make('dompdf.wrapper');
-         $pdf->loadHTML($view);
-         return $pdf->stream();*/
+        $pdf=PDF::loadView('productores.estudioPdf',compact('productor','familias','direccion'));
+       return $pdf->download();
     }
 
     /**

@@ -14,7 +14,7 @@
 
 </div>
 
-
+ 
 
 <div class="container">
 
@@ -72,17 +72,18 @@
 
 
 
-  <div class="form-group">
+    <div class="form-group">
 
-    <label for="Edad">Edad <span class="text-danger"> *</span></label>
+        <label for="Edad">Fecha de Nacimiento <span class="text-danger"> *</span></label>
 
-    <input type="text" class="form-control @error('edad') is-invalid @enderror" id="edad" name="edad" value="{{ old('edad')}}" placeholder="20" required>
-    @error('edad')
-        <div class="invalid-feedback">
-            {{$message}}
-        </div>
-    @enderror
-  </div>
+        <input class="form-control @error('edad') is-invalid @enderror" type="date" value="2011-08-19" id="f_nac" name="f_nac" required>
+        @error('f_nac')
+            <div class="invalid-feedback">
+                {{$message}}
+            </div>
+        @enderror 
+              
+    </div>
 
 
   <div class="form-group">

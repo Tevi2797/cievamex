@@ -15,7 +15,7 @@
 
 
 <div class="container">
-
+ 
 <br><br>
 
   <div class="row justify-content-md-center">
@@ -64,6 +64,25 @@
                             <option value="{{$suelo->id}}"> {{$suelo->nombre}}</option>
                         @endforeach
                     </select>
+                </div>
+                <div class="form-group">
+
+                    <label for="tipo">Estado<span class="text-danger"> *</span></label>
+
+                    <select  class="form-control @error('select_edo') is-invalid @enderror" id="estado" name="estado" >
+
+                    <option>Seleccione una Opción</option>
+
+                        @foreach($estados as $estado)
+                            <option value="{{$estado->id}}"> {{$estado->nombre}}</option>
+                        @endforeach
+
+                    </select>
+                    @error('select_edo')
+                        <div class="invalid-feedback">
+                            {{$message}}
+                        </div>
+                    @enderror
                 </div>
 
                 <div class="form-group">
@@ -157,7 +176,7 @@
 
 </div>
 
-<br><br>
+
 
 
 

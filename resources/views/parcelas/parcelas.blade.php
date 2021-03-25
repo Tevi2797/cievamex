@@ -1,18 +1,8 @@
 @extends('plantillas.adminMain')
 
-
-
-
-
 @section('titulo','Parcelas')
 
-
-
-
-
 @section('formbus')
-
-
 
 <div class="container">
 
@@ -24,18 +14,38 @@
     </div>
 
     <br>
+    <form>
     <div class="row">
 		<div class="col">
-            <form>
                 <div class="input-group mb-3">
                     <input type="text" class="form-control" id="buscar" name="buscar" placeholder="Ingrese el nombre, municipio o estado" >
+                    <input type="hidden" value="{{$buscar}}" id="buscarParc">
                     <div>
                         <input type="submit" name="boton" value="Buscar" class="btn fondoVerde">
                     </div>
                 </div>
-            </form>
         </div>
     </div>
+    <div class="row">
+        <div class="col-5">
+            @if ($cantidad>0)
+            <div class="input-group">
+               <h6>Total {{ $cantidad }} parcelas </h6>
+                <select class="custom-select ml-2 mr-sm-2" name="filas" id="filasParcela">
+                    <option value="10" @if($filas==='10') selected  @endif>10</option>
+                    <option value="20"  @if($filas==='20') selected  @endif>25</option>
+                    <option value="50"  @if($filas==='50') selected  @endif>50</option>
+                    <option value="100" @if($filas==='100') selected  @endif>100</option>
+                </select>
+                 por página
+            </div>
+        @else
+            No se encontraron parcelas con esas características.
+        @endif
+        </div>
+    </div>
+    </form>
+    <br>
 
     <div class=row>
         <div class="col">
@@ -95,7 +105,7 @@
 
 				  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
-				    <a class="dropdown-item" href="{{route('destroy.parcela',$parameter)}}">Eliminar</a>
+				    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#eliminar_parcela{{$parcela->id}}">Eliminar</a>
 
 				<!--    <a class="dropdown-item" href="{{route('plantaciones.nuevo',$parcela->id)}}">Agregar Plantacion</a> -->
 
@@ -110,20 +120,20 @@
 				  </div>
 
                 </div>
-            </td>
 
+            </td>
+           @include('parcelas.eliminarParcela')
+        </tr>
     @endforeach
 
 		</table>
-
+        </div>
+    </div>
+    <div class="row">
+        <div class="mx-auto">
+          <span class="fondoVerde">{{$parcelas->appends(['buscar'=>$buscar,'filas'=>$filas])->links()}} </span>
         </div>
     </div>
 </div>
-
-
-
-
-
-
 
 @endsection
